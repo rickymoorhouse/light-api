@@ -187,22 +187,14 @@ class WebLight(object):
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         return "OK" + out
 
+if __name__ == "__main__":
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    conf = {
+        'global': {
+            'server.socket_host': '0.0.0.0',
+            'server.socket_port': int(os.getenv('VCAP_APP_PORT',8004)),
+        },
+    }
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-conf = {
-    'global': {
-        'server.socket_host': '0.0.0.0',
-        'server.socket_port': int(os.getenv('VCAP_APP_PORT',8004)),
-    },
-}
-
-#syslog = SysLogHandler(address=('logs.papertrailapp.com',26153))
-#formatter = logging.Formatter('%(asctime)s web_light: %(message)s', datefmt='%b %d %H:%M:%S')#
-
-#syslog.setFormatter(formatter)
-#syslog.setLevel(logging.DEBUG)
-
-#cherrypy.log.access_log.addHandler(syslog)
-#cherrypy.log.error_log.addHandler(syslog)
-cherrypy.quickstart(WebLight(), '/', config=conf)
+    cherrypy.quickstart(WebLight(), '/', config=conf)
 
