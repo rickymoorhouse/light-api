@@ -1,4 +1,6 @@
 *.pyc
 venv/
 dist/
+build/
+.cache/
 *.egg-info

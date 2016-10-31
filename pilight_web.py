@@ -179,4 +179,4 @@ if __name__ == "__main__":
         },
     }
 
-    cherrypy.quickstart(WebLight(), '/', config=conf)
+    cherrypy.quickstart(WebLight('console'), '/', config=conf)

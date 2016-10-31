@@ -8,7 +8,7 @@ import time
 import struct
 import colorsys
 from logging.handlers import SysLogHandler
-
+import unicornhat
 
 class WebLight(object):
     env = None
@@ -32,12 +32,8 @@ class WebLight(object):
     def __init__(self):
         self.logger = logging.getLogger()
         self.env = json.loads(os.getenv('VCAP_APPLICATION','{}'))
-        try:
-            import unicornhat
-            unicornhat.set_layout(unicornhat.AUTO)
-            (self.width,self.height) = unicornhat.get_shape()
-        except Exception as e:
-            self.logger.exception(e)
+        unicornhat.set_layout(unicornhat.AUTO)
+        (self.width,self.height) = unicornhat.get_shape()
 
     def _setrgb(self,r=0, g=0, b=0):
         for y in range(self.height):

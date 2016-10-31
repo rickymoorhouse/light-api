@@ -1,7 +1,7 @@
-import lightbase
+import pilight
 import unicornhat
 
-class Unicorn(lightbase.LightBase):
+class Unicorn(pilight.LightBase):
     """ Unicorn hat
     """
     width = 0
