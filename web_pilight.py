@@ -7,8 +7,8 @@ import logging
 import time
 import struct
 import colorsys
+from stevedore import driver
 from logging.handlers import SysLogHandler
-
 
 class WebLight(object):
     env = None
@@ -29,29 +29,24 @@ class WebLight(object):
     ]
     logger = None
 
-    def __init__(self):
+
+    def __init__(self, device='unicornhat'):
         self.logger = logging.getLogger()
         self.env = json.loads(os.getenv('VCAP_APPLICATION','{}'))
-        try:
-            import unicornhat
-            unicornhat.set_layout(unicornhat.AUTO)
-            (self.width,self.height) = unicornhat.get_shape()
-        except Exception as e:
-            self.logger.exception(e)
+        self.mgr = driver.DriverManager(
+            namespace='pilight.device',
+            name=device,
+            invoke_on_load=True,
+        )
 
     def _setrgb(self,r=0, g=0, b=0):
-        for y in range(self.height):
-            for x in range(1,self.width):
-                unicornhat.set_pixel(x,y, int(r), int(g), int(b))
-            unicornhat.show()
+        self.mgr.driver.rgb(r, g, b)
         return {"red":r, "green":g, "blue":b}
 
     @cherrypy.expose
     def led(self,led=0, r=0, g=0, b=0, row=0):
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        if int(led) < self.height:
-            unicornhat.set_pixel(row, int(led), int(r), int(g), int(b))
-            unicornhat.show()
+        if self.mgr.driver.led(r, g, b, led, row):
             return "OK"
         else:
             cherrypy.response.status = 400
@@ -155,7 +150,7 @@ class WebLight(object):
     @cherrypy.tools.json_out()
     @cherrypy.expose
     def state(self):
-      return unicornhat.get_pixels()
+      return "unimplemented" #unicornhat.get_pixels()
 
     @cherrypy.expose
     def brightness(self):
@@ -174,23 +169,6 @@ class WebLight(object):
         self.g = g
         self.on = True
         return self._setrgb(r, g, b)
-
-    @cherrypy.expose
-    def rgba(self,r=0, g=0, b=0, a=0):
-        out = str(a) + " "
-        i = 0
-        for y in range(self.height):
-            for x in range(self.width):
-                i += 1
-                if i == int(a):
-                    unicornhat.set_pixel(x,y, int(r), int(g), int(b))
-                    unicornhat.show()
-                    i = 0
-                    out += '1'
-                else:
-                    out += '0'
-        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        return "OK" + out
 
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
