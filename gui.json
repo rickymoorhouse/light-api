@@ -39,9 +39,9 @@
 {
 "button1": "on 💡",
 "button2": "off 🌙",
-"cmd1": "http://192.168.0.13:8004/rgb/255/255/255",
+"cmd1": "http://192.168.0.13:8004/onn",
 "cmd1Id": "uniqueCmdId1M",
-"cmd2": "http://192.168.0.13:8004/rgb/0/0/0",
+"cmd2": "http://192.168.0.13:8004/off",
 "cmd2Id": "uniqueCmdId2M",
 "headline1": "Light",
 "sizeType": "medium"
