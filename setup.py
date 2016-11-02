@@ -33,6 +33,7 @@ setup(
     install_requires=["stevedore","cherrypy"],
     test_requires=["nose","mock"],
     entry_points={
+        'console_scripts': ['pilight=pilight:startWebServer'],
         'pilight.device': [
             'unicornhat = pilight.unicorn_hat:Unicorn',
             'console = pilight.text:Text',

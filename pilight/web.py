@@ -171,16 +171,3 @@ class WebLight(object):
         self.on = True
         return self._setrgb(r, g, b)
 
-if __name__ == "__main__":
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    conf = {
-        'global': {
-            'server.socket_host': '0.0.0.0',
-            'server.socket_port': int(os.getenv('VCAP_APP_PORT',8004)),
-        },
-    }
-    if len(sys.argv) > 1:
-        device = sys.argv[1]
-    else:
-        device = 'console'
-    cherrypy.quickstart(WebLight(device), '/', config=conf)
