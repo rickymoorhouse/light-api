@@ -154,7 +154,7 @@ class WebLight(object):
     @cherrypy.expose
     def state(self):
         """ Return LED state """
-        return "unimplemented" #unicornhat.get_pixels()
+        return self.mgr.driver.state()
 
     @cherrypy.expose
     def brightness(self):

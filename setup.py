@@ -1,4 +1,5 @@
 # setup.py
+""" Installation for pilight """
 from setuptools import setup, find_packages
 
 setup(
@@ -19,21 +20,21 @@ setup(
                  'Programming Language :: Python :: 2.7',
                  'Intended Audience :: Developers',
                  'Environment :: Console',
-                 ],
+                ],
 
     platforms=['Any'],
 
     scripts=[],
 
     provides=['pilight',
-              ],
+             ],
 
     packages=find_packages(),
     include_package_data=True,
-    install_requires=["stevedore","cherrypy"],
-    test_requires=["nose","mock"],
+    install_requires=["stevedore", "cherrypy"],
+    test_requires=["nose", "mock"],
     entry_points={
-        'console_scripts': ['pilight=pilight:startWebServer'],
+        'console_scripts': ['pilight=pilight:start_server'],
         'pilight.device': [
             'unicornhat = pilight.unicorn_hat:Unicorn',
             'console = pilight.text:Text',

@@ -9,13 +9,13 @@ class Unicorn(pilight.LightBase):
 
     def __init__(self):
         unicornhat.set_layout(unicornhat.AUTO)
-        (self.width,self.height) = unicornhat.get_shape()
+        (self.width, self.height) = unicornhat.get_shape()
 
     def rgb(self, red, green, blue):
         """ Set the hat to this colour
         """
         for y in range(self.height):
-            for x in range(1,self.width):
+            for x in range(1, self.width):
                 unicornhat.set_pixel(x,y, int(red), int(green), int(blue))
             unicornhat.show()
         return True
@@ -27,3 +27,5 @@ class Unicorn(pilight.LightBase):
             return True
         else:
             return False
+    def state(self):
+        return unicornhat.get_pixels()
