@@ -36,7 +36,7 @@ setup(
         'pilight.device': [
             'unicornhat = pilight.unicorn_hat:Unicorn',
             'console = pilight.text:Text',
-            'piglow = pilight.pi_glow:Piglow',
+            'piglow = pilight.pi_glow:PiGlow',
         ],
     },
 
