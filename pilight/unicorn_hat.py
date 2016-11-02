@@ -16,11 +16,11 @@ class Unicorn(pilight.LightBase):
         """
         for y in range(self.height):
             for x in range(1,self.width):
-                unicornhat.set_pixel(x,y, int(r), int(g), int(b))
+                unicornhat.set_pixel(x,y, int(red), int(green), int(blue))
             unicornhat.show()
         return True
 
-    def led(self,red, green, blue, led=0, row=0):
+    def led(self, red, green, blue, led=0, row=0):
         if int(led) < self.height and int(row) < self.width:
             unicornhat.set_pixel(int(row), int(led), int(red), int(green), int(blue))
             unicornhat.show()

@@ -154,6 +154,7 @@ class WebLight(object):
 
     @cherrypy.expose
     def brightness(self):
+      vals = []
       for x in self.r, self.g, self.b:
         vals.append(x/255.0)
       l = (min(vals) + max(vals))/2
