@@ -14,9 +14,9 @@ class WebLight(object):
     env = None
     width = 0
     height = 0
-    r = 0
-    g = 0
-    b = 0
+    red = 0
+    green = 0
+    blue = 0
     h = 1
     s = 1
     l = 1
@@ -65,7 +65,7 @@ class WebLight(object):
     def onn(self):
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         self.on = True
-        return self._setrgb(self.r, self.g, self.b)
+        return self._setrgb(self.red, self.green, self.blue)
 
     @cherrypy.tools.json_out()
     @cherrypy.expose
@@ -102,7 +102,7 @@ class WebLight(object):
             return "off"
 
     def _hsl(self):
-        h, s, l = colorsys.rgb_to_hls(self.r / 255.0, self.g / 255.0, self.b / 255.0)
+        h, s, l = colorsys.rgb_to_hls(self.red / 255.0, self.green / 255.0, self.blue / 255.0)
         h = h * 360
         if h < 1:
             h = 1
@@ -125,9 +125,9 @@ class WebLight(object):
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         if r+g+b > 0:
             self.logger.info("Greater than zero - logging rgb: %d, %d, %d", r, g, b)
-            self.r = r * 255
-            self.b = b * 255
-            self.g = g * 255
+            self.red = r * 255
+            self.blue = b * 255
+            self.green = g * 255
         return self._setrgb(r * 255, g * 255, b * 255)
 
     @cherrypy.tools.json_out()
@@ -135,9 +135,9 @@ class WebLight(object):
     def rgb(self,r=0, g=0, b=0):
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         if r+g+b > 0:
-            self.r = r
-            self.b = b
-            self.g = g
+            self.red = r
+            self.blue = b
+            self.green = g
             self.on = True
         else:
             self.on = False
@@ -145,7 +145,7 @@ class WebLight(object):
 
     @cherrypy.expose
     def colour(self):
-      return ''+struct.pack("BBB",*(self.r, self.g, self.b)).encode('hex')
+      return ''+struct.pack("BBB",*(self.red, self.green, self.blue)).encode('hex')
 
     @cherrypy.tools.json_out()
     @cherrypy.expose
@@ -155,7 +155,7 @@ class WebLight(object):
     @cherrypy.expose
     def brightness(self):
       vals = []
-      for x in self.r, self.g, self.b:
+      for x in self.red, self.green, self.blue:
         vals.append(x/255.0)
       l = (min(vals) + max(vals))/2
       return str(l*100)
@@ -166,9 +166,8 @@ class WebLight(object):
         hex_code = value.replace("#","")
         (r, g, b) = struct.unpack('BBB',hex_code.decode('hex'))
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        self.r = r
-        self.b = b
-        self.g = g
+        self.red = r
+        self.blue = b
+        self.green = g
         self.on = True
         return self._setrgb(r, g, b)
-
