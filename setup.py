@@ -31,9 +31,10 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=["stevedore","cherrypy"],
+    test_requires=["nose","mock"],
     entry_points={
         'pilight.device': [
-            'unicornhat = pilight.unicornhat:Unicorn',
+            'unicornhat = pilight.unicorn_hat:Unicorn',
             'console = pilight.text:Text',
             'piglow = pilight.pi_glow:Piglow',
         ],

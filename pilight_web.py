@@ -57,7 +57,7 @@ class WebLight(object):
     def status(self):
         if self.on:
             return "1"
-	else:
+        else:
             return "0"
 
     @cherrypy.tools.json_out()
@@ -154,7 +154,8 @@ class WebLight(object):
 
     @cherrypy.expose
     def brightness(self):
-      vals = [x/255.0 for x in self.r, self.g, self.b]
+      for x in self.r, self.g, self.b:
+        vals.append(x/255.0)
       l = (min(vals) + max(vals))/2
       return str(l*100)
 
@@ -178,5 +179,8 @@ if __name__ == "__main__":
             'server.socket_port': int(os.getenv('VCAP_APP_PORT',8004)),
         },
     }
-
-    cherrypy.quickstart(WebLight('console'), '/', config=conf)
+    if len(sys.argv) > 1:
+        device = sys.argv[1]
+    else:
+        device = 'console'
+    cherrypy.quickstart(WebLight(device), '/', config=conf)

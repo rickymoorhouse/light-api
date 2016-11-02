@@ -1,4 +1,4 @@
-import web_light
+import pilight_web
 import unittest
 import mock
 
@@ -8,7 +8,7 @@ class weblightTest(unittest.TestCase):
         self.assertEqual(3, 3)
 
     def testRGB(self):
-        w = web_light.WebLight()
+        w = pilight_web.WebLight('console')
         response = w.rgb(255,240,230)
         self.assertEqual("red" in response, True)
         self.assertEqual(response['red'], 255)
@@ -16,7 +16,7 @@ class weblightTest(unittest.TestCase):
         self.assertEqual(response['blue'], 230)
 
     def testOnOff(self):
-        w = web_light.WebLight()
+        w = pilight_web.WebLight('console')
         # First set a colour
         response = w.rgb(30,140,250)
         self.assertEqual(response['red'], 30)
@@ -35,8 +35,8 @@ class weblightTest(unittest.TestCase):
 
 
     def testHSL(self):
-            w = web_light.WebLight()
-            response = w.hsl(255,100,100)
-            self.assertEqual(response['red'], 255)
-            self.assertEqual(response['green'], 255)
-            self.assertEqual(response['blue'], 255)
+        w = pilight_web.WebLight('console')
+        response = w.hsl(255,100,100)
+        self.assertEqual(response['red'], 255)
+        self.assertEqual(response['green'], 255)
+        self.assertEqual(response['blue'], 255)
