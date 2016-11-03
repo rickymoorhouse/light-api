@@ -8,7 +8,6 @@ class Text(LightBase):
 
     def __init__(self):
         print("Initialised")
-        LightBase.__init__()
 
     def rgb(self, red, green, blue):
         """ Set the hat to this colour
