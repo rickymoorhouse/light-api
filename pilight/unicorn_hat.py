@@ -10,6 +10,7 @@ class Unicorn(pilight.LightBase):
     def __init__(self):
         unicornhat.set_layout(unicornhat.AUTO)
         (self.width, self.height) = unicornhat.get_shape()
+        LightBase.__init__()
 
     def rgb(self, red, green, blue):
         """ Set the hat to this colour
