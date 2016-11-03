@@ -23,12 +23,12 @@ class weblightTest(unittest.TestCase):
         self.assertEqual(response['green'], 140)
         self.assertEqual(response['blue'], 250)
         # Turn off
-        response = w.off()
+        response = w.power_off()
         self.assertEqual(response['red'], 0)
         self.assertEqual(response['green'], 0)
         self.assertEqual(response['blue'], 0)
         # Turn off
-        response = w.onn()
+        response = w.power_on()
         self.assertEqual(response['red'], 30)
         self.assertEqual(response['green'], 140)
         self.assertEqual(response['blue'], 250)
