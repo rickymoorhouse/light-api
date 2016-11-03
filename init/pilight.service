@@ -1,0 +1,15 @@
+[Unit]
+Description=PiLight Web Server
+After=syslog.target network-online.target
+
+[Service]
+Type=simple
+User=root
+EnvironmentFile=/etc/default/pilight
+ExecStart=/home/ricky/auto/pilight_web.py
+Restart=on-failure
+RestartSec=10
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

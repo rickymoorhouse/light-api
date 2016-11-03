@@ -1,8 +1,8 @@
+import os
 import abc
 import six
 import pilight.web
 import cherrypy
-import os
 
 @six.add_metaclass(abc.ABCMeta)
 class LightBase(object):
@@ -25,17 +25,21 @@ class LightBase(object):
     def led(self, red, green, blue, led, row):
         """ Sets an individual LED """
 
+    @abc.abstractmethod
+    def state(self):
+        """ Returns current state """
 
-def startWebServer():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+def start_server():
+    """ Load the environment and start the webserver """
     conf = {
         'global': {
             'server.socket_host': '0.0.0.0',
-            'server.socket_port': int(os.getenv('PORT',8004)),
+            'server.socket_port': int(os.getenv('PORT', 8004)),
         },
     }
-    device = os.getenv('PILIGHT_DEVICE','console')
+    device = os.getenv('PILIGHT_DEVICE', 'console')
     cherrypy.quickstart(pilight.web.WebLight(device), '/', config=conf)
 
 if __name__ == "__main__":
-    startWebServer()
+    start_server()

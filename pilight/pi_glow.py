@@ -14,7 +14,7 @@ class PiGlow(LightBase):
         piglow.show()
         return True
 
-    def led(self,red, green, blue, led=0, row=0):
+    def led(self, red, green, blue, led=0, row=0):
         """ As piglow doesn't have RGB leds - use each leg for this -> 0, 1, 2 """
 
         if int(led) < 2:
@@ -25,3 +25,6 @@ class PiGlow(LightBase):
             return True
         else:
             return False
+
+    def state(self):
+        return "unimplemented"

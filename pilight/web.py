@@ -1,52 +1,46 @@
 #!/usr/bin/python
-import json
-import cherrypy
-import os
-import sys
+""" API interface to pilight """
 import logging
-import time
 import struct
 import colorsys
+import cherrypy
 from stevedore import driver
-from logging.handlers import SysLogHandler
 
 class WebLight(object):
-    env = None
-    width = 0
-    height = 0
+    """ Main web api methods """
     red = 0
     green = 0
     blue = 0
-    h = 1
-    s = 1
-    l = 1
-    on = False
-    levels = [
-        [0,0,0],
-        [0,255,0],
-        [255,255,0],
-        [255,0,0]
-    ]
+    _hue = 1
+    _sat = 1
+    _lum = 1
+    is_on = False
     logger = None
 
 
     def __init__(self, device='unicornhat'):
         self.logger = logging.getLogger()
-        self.env = json.loads(os.getenv('VCAP_APPLICATION','{}'))
         self.mgr = driver.DriverManager(
             namespace='pilight.device',
             name=device,
             invoke_on_load=True,
         )
 
-    def _setrgb(self,r=0, g=0, b=0):
-        self.mgr.driver.rgb(r, g, b)
-        return {"red":r, "green":g, "blue":b}
+    def _setrgb(self, red=None, green=None, blue=None):
+        if red is None:
+            red = self.red
+        if green is None:
+            green = self.green
+        if blue is None:
+            blue = self.blue
+        self.mgr.driver.rgb(red, green, blue)
+        return {"red":red, "green":green, "blue":blue}
 
     @cherrypy.expose
-    def led(self,led=0, r=0, g=0, b=0, row=0):
+    def led(self, led=0, red=0, green=0, blue=0, row=0):
+        """ Set specific LED to a colour """
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        if self.mgr.driver.led(r, g, b, led, row):
+        if self.mgr.driver.led(red, green, blue, led, row):
             return "OK"
         else:
             cherrypy.response.status = 400
@@ -55,119 +49,131 @@ class WebLight(object):
 
     @cherrypy.expose
     def status(self):
-        if self.on:
+        """ return power status 1 for on, 0 for off """
+        if self.is_on:
             return "1"
         else:
             return "0"
 
     @cherrypy.tools.json_out()
     @cherrypy.expose
-    def onn(self):
+    def power_on(self):
+        """ turn light on """
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        self.on = True
+        self.is_on = True
         return self._setrgb(self.red, self.green, self.blue)
 
     @cherrypy.tools.json_out()
     @cherrypy.expose
-    def off(self):
+    def power_off(self):
+        """ Turn the light off """
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        self.on = False
+        self.is_on = False
         return self._setrgb(0, 0, 0)
 
     @cherrypy.tools.json_out()
     @cherrypy.expose
     def hue(self, value):
-        self.h = value
-        if self.on:
-            return self.hsl(value, self.s, self.l)
+        """ Set the hue """
+        self._hue = value
+        if self.is_on:
+            return self.hsl(value, self._sat, self._lum)
         else:
             return "off"
 
     @cherrypy.tools.json_out()
     @cherrypy.expose
     def sat(self, value):
-        self.s = value
-        if self.on:
-            return self.hsl(self.h, value, self.l)
+        """ Set the saturation """
+        self._sat = value
+        if self.is_on:
+            return self.hsl(self._hue, value, self._lum)
         else:
             return "off"
 
     @cherrypy.tools.json_out()
     @cherrypy.expose
     def lum(self, value):
-        self.l = value
-        if self.on:
-            return self.hsl(self.h, self.s, value)
+        """ Set the luminance """
+        self._lum = value
+        if self.is_on:
+            return self.hsl(self._hue, self._sat, value)
         else:
             return "off"
 
     def _hsl(self):
-        h, s, l = colorsys.rgb_to_hls(self.red / 255.0, self.green / 255.0, self.blue / 255.0)
-        h = h * 360
-        if h < 1:
-            h = 1
-        s = s * 100
-        if s < 1:
-            s = 1
-        l = l * 100
-        if l < 1:
-            l = 1
-        return (h, s, l)
+        hue, sat, lum = colorsys.rgb_to_hls(self.red / 255.0, self.green / 255.0, self.blue / 255.0)
+        hue = hue * 360
+        if hue < 1:
+            hue = 1.0
+        sat = sat * 100
+        if sat < 1:
+            sat = 1.0
+        lum = lum * 100
+        if lum < 1:
+            lum = 1.0
+        return (hue, sat, lum)
 
 
     @cherrypy.tools.json_out()
     @cherrypy.expose
-    def hsl(self,h=0, s=0, l=0):
-        self.h = h
-        self.s = s
-        self.l = l
-        r, g, b = colorsys.hls_to_rgb(float(h)/360, float(l)/100, float(s)/100)
+    def hsl(self, hue=0, sat=0, lum=0):
+        """ Set Hue, Saturation and Luminance """
+        self._hue = hue
+        self._sat = sat
+        self._lum = lum
+        red, green, blue = colorsys.hls_to_rgb(float(hue)/360, float(lum)/100, float(sat)/100)
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        if r+g+b > 0:
-            self.logger.info("Greater than zero - logging rgb: %d, %d, %d", r, g, b)
-            self.red = r * 255
-            self.blue = b * 255
-            self.green = g * 255
-        return self._setrgb(r * 255, g * 255, b * 255)
+        if red + green + blue > 0:
+            self.logger.info("Greater than zero - logging rgb: %d, %d, %d", red, green, blue)
+            self.red = red * 255
+            self.blue = blue * 255
+            self.green = green * 255
+        return self._setrgb()
 
     @cherrypy.tools.json_out()
     @cherrypy.expose
-    def rgb(self,r=0, g=0, b=0):
+    def rgb(self, red=0, green=0, blue=0):
+        """ Set light to this RGB vakue """
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        if r+g+b > 0:
-            self.red = r
-            self.blue = b
-            self.green = g
-            self.on = True
+        if red+green+blue > 0:
+            self.red = red
+            self.blue = blue
+            self.green = green
+            self.is_on = True
         else:
-            self.on = False
-        return self._setrgb(r, g, b)
+            self.is_on = False
+        return self._setrgb()
 
     @cherrypy.expose
     def colour(self):
-      return ''+struct.pack("BBB",*(self.red, self.green, self.blue)).encode('hex')
+        """ return current hex code """
+        return ''+struct.pack("BBB", *(self.red, self.green, self.blue)).encode('hex')
 
     @cherrypy.tools.json_out()
     @cherrypy.expose
     def state(self):
-      return "unimplemented" #unicornhat.get_pixels()
+        """ Return LED state """
+        return self.mgr.driver.state()
 
     @cherrypy.expose
     def brightness(self):
-      vals = []
-      for x in self.red, self.green, self.blue:
-        vals.append(x/255.0)
-      l = (min(vals) + max(vals))/2
-      return str(l*100)
+        """ return calculated brightness 0-100 """
+        vals = []
+        for value in self.red, self.green, self.blue:
+            vals.append(value/255.0)
+        brightness = (min(vals) + max(vals))/2
+        return str(brightness*100)
 
     @cherrypy.tools.json_out()
     @cherrypy.expose
-    def hex(self,value="#000000"):
-        hex_code = value.replace("#","")
-        (r, g, b) = struct.unpack('BBB',hex_code.decode('hex'))
+    def hex(self, value="#000000"):
+        """ Set light to this hex colour """
+        hex_code = value.replace("#", "")
+        (red, green, blue) = struct.unpack('BBB', hex_code.decode('hex'))
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        self.red = r
-        self.blue = b
-        self.green = g
-        self.on = True
-        return self._setrgb(r, g, b)
+        self.red = red
+        self.blue = blue
+        self.green = green
+        self.is_on = True
+        return self._setrgb()
