@@ -15,6 +15,11 @@ class weblightTest(unittest.TestCase):
         self.assertEqual(response['green'], 240)
         self.assertEqual(response['blue'], 230)
 
+    def testLed(self):
+        w = pilight.web.WebLight('console')
+        response = w.led(1,255,240,230)
+        self.assertEqual("OK" in response, True)
+
     def testOnOff(self):
         w = pilight.web.WebLight('console')
         # First set a colour
