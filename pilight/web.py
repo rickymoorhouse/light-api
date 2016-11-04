@@ -101,20 +101,6 @@ class WebLight(object):
         else:
             return "off"
 
-    def _hsl(self):
-        hue, sat, lum = colorsys.rgb_to_hls(self.red / 255.0, self.green / 255.0, self.blue / 255.0)
-        hue = hue * 360
-        if hue < 1:
-            hue = 1.0
-        sat = sat * 100
-        if sat < 1:
-            sat = 1.0
-        lum = lum * 100
-        if lum < 1:
-            lum = 1.0
-        return (hue, sat, lum)
-
-
     @cherrypy.tools.json_out()
     @cherrypy.expose
     def hsl(self, hue=0, sat=0, lum=0):

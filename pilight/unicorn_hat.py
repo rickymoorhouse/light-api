@@ -1,4 +1,5 @@
 from pilight import LightBase
+from time import sleep
 import unicornhat
 
 class Unicorn(LightBase):
@@ -19,6 +20,7 @@ class Unicorn(LightBase):
             for x in range(1, self.width):
                 unicornhat.set_pixel(x,y, int(red), int(green), int(blue))
             unicornhat.show()
+            sleep(0.3)
         return True
 
     def led(self, red, green, blue, led=0, row=0):
