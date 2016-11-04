@@ -1,5 +1,6 @@
-from pilight import LightBase
+""" Light API Module for Unicorn Hat from Pimoroni """
 from time import sleep
+from pilight import LightBase
 import unicornhat
 
 class Unicorn(LightBase):
@@ -16,9 +17,9 @@ class Unicorn(LightBase):
     def rgb(self, red, green, blue):
         """ Set the hat to this colour
         """
-        for y in range(self.height):
-            for x in range(1, self.width):
-                unicornhat.set_pixel(x,y, int(red), int(green), int(blue))
+        for yref in range(self.height):
+            for xref in range(1, self.width):
+                unicornhat.set_pixel(xref, yref, int(red), int(green), int(blue))
             unicornhat.show()
             sleep(0.3)
         return True
