@@ -14,6 +14,16 @@ class weblightTest(unittest.TestCase):
         self.assertEqual(response['red'], 255)
         self.assertEqual(response['green'], 240)
         self.assertEqual(response['blue'], 230)
+        self.assertEqual(w.colour(), "fff0e6")
+
+    def testHex(self):
+        w = pilight.web.WebLight('console')
+        response = w.hex("eeddcc")
+        self.assertEqual(response['red'], 238)
+        self.assertEqual(response['green'], 221)
+        self.assertEqual(response['blue'], 204)
+        self.assertEqual(w.colour(), "eeddcc")
+         
 
     def testLed(self):
         w = pilight.web.WebLight('console')
