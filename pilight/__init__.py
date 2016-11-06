@@ -8,9 +8,9 @@ import cherrypy
 class LightBase(object):
     """Base class for example plugin used in the tutorial.
     """
-
-    def __init__(self, max_width=60):
-        self.max_width = max_width
+    @abc.abstractmethod
+    def __init__(self):
+        """ Abstract init method """
 
     @abc.abstractmethod
     def rgb(self, red, green, blue):
@@ -29,17 +29,21 @@ class LightBase(object):
     def state(self):
         """ Returns current state """
 
-
-def start_server():
-    """ Load the environment and start the webserver """
+def configure():
+    """ Prepare the configuration """
+    device = os.getenv('PILIGHT_DEVICE', 'console')
     conf = {
         'global': {
             'server.socket_host': '0.0.0.0',
             'server.socket_port': int(os.getenv('PORT', 8004)),
         },
+        'device':device
     }
-    device = os.getenv('PILIGHT_DEVICE', 'console')
-    cherrypy.quickstart(pilight.web.WebLight(device), '/', config=conf)
+    return conf
+def start_server():
+    """ Load the environment and start the webserver """
+    conf = configure()
+    cherrypy.quickstart(pilight.web.WebLight(), '/', config=conf)
 
 if __name__ == "__main__":
     start_server()
