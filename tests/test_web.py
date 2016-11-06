@@ -44,12 +44,16 @@ class weblightTest(unittest.TestCase):
         self.assertEqual(response['green'], 0)
         self.assertEqual(response['blue'], 0)
         self.assertEqual(w.status(), '0')
-        # Turn off
+        # check that hsl settings return off whilst off
+        self.assertEqual(w.hue(255), "off")
+        self.assertEqual(w.sat(255), "off")
+        self.assertEqual(w.lum(255), "off")
+
+        # Turn on
         response = w.power_on()
         self.assertEqual(response['red'], 30)
         self.assertEqual(response['green'], 140)
         self.assertEqual(response['blue'], 250)
-
 
     def testHSL(self):
         w = pilight.web.WebLight('console')
